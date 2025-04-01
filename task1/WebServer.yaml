@@ -80,6 +80,17 @@ Resources:
               - s3:PutObject
               - s3:GetObject
             Resource: !Sub ${LogBucket.Arn}/*
+  
+  ALBSecurityGroup:
+    Ty/pe: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for ALB
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0
 
   WebServerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -98,6 +109,13 @@ Resources:
       Tags:
         - Key: Name
           Value: WebServer-SecurityGroup
+  
+  # ACM Certificate
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
 
   WebServerInstance:
     Type: AWS::EC2::Instance
